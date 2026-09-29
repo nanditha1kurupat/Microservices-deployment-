@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusCommerce | Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --surface: rgba(30,41,59,0.8);
+            --border: rgba(255,255,255,0.1);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
+        body {
+            min-height: 100vh;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(99,102,241,0.2), transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(236,72,153,0.15), transparent 40%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(20px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo i { font-size:2.5rem; color: var(--primary); }
+        .logo h1 { font-size:1.75rem; margin-top:0.5rem; }
+        .logo p  { color: var(--text-muted); font-size:0.9rem; margin-top:0.25rem; }
+        .input-group { margin-bottom: 1.25rem; }
+        .input-group label {
+            display:block;
+            font-size:0.85rem;
+            font-weight:500;
+            color: var(--text-muted);
+            margin-bottom:0.5rem;
+        }
+        .input-group input {
+            width:100%;
+            background: rgba(15,23,42,0.6);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            font-size:1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group input:focus {
+            outline:none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .btn-login {
+            width:100%;
+            padding: 0.9rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size:1rem;
+            font-weight:600;
+            cursor:pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top:0.5rem;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+        }
+        .btn-login:hover { background: var(--primary-hover); transform:translateY(-1px); }
+        .btn-login:active { transform:translateY(0); }
+        .error-msg {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size:0.9rem;
+            margin-bottom:1rem;
+            display:none;
+        }
+        .back-link {
+            text-align:center;
+            margin-top:1.5rem;
+        }
+        .back-link a {
+            color: var(--text-muted);
+            text-decoration:none;
+            font-size:0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link a:hover { color: var(--text); }
+        .hint {
+            text-align:center;
+            color: var(--text-muted);
+            font-size:0.78rem;
+            margin-top:1rem;
+            opacity:0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">
+            <i class="ri-shield-keyhole-line"></i>
+            <h1>Admin Portal</h1>
+            <p>NexusCommerce — Restricted Access</p>
+        </div>
+        <div class="error-msg" id="errorMsg">
+            <i class="ri-error-warning-line"></i> Incorrect username or password.
+        </div>
+        <form onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="adminUser" placeholder="Enter admin username" autocomplete="username" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="adminPass" placeholder="Enter password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">
+                <i class="ri-login-box-line"></i> Sign In
+            </button>
+        </form>
+        <div class="hint">Demo credentials: admin / admin123</div>
+        <div class="back-link">
+            <a href="store.html"><i class="ri-arrow-left-line"></i> Back to Storefront</a>
+        </div>
+    </div>
+
+    <script>
+        // If already logged in, go straight to panel
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            window.location.href = 'index.html';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value;
+            const btn  = document.getElementById('loginBtn');
+            const err  = document.getElementById('errorMsg');
+
+            // Credentials — change these as needed
+            const ADMIN_USER = 'admin';
+            const ADMIN_PASS = 'admin123';
+
+            btn.innerHTML = '<i class="ri-loader-4-line"></i> Signing in...';
+            btn.disabled = true;
+
+            // Small delay for UX
+            setTimeout(() => {
+                if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                    sessionStorage.setItem('adminAuth', 'true');
+                    window.location.href = 'index.html';
+                } else {
+                    err.style.display = 'block';
+                    btn.innerHTML = '<i class="ri-login-box-line"></i> Sign In';
+                    btn.disabled = false;
+                    document.getElementById('adminPass').value = '';
+                    document.getElementById('adminPass').focus();
+                }
+            }, 600);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusCommerce | Admin Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:.9rem}
+        th{text-align:left;padding:.75rem 1rem;border-bottom:2px solid var(--border-color);color:var(--text-secondary);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+        td{padding:.85rem 1rem;border-bottom:1px solid var(--border-color);vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:rgba(255,255,255,.02)}
+        .badge{display:inline-block;padding:.2rem .65rem;border-radius:50px;font-size:.75rem;font-weight:600}
+        .badge-green{background:rgba(16,185,129,.15);color:#10b981}
+        .badge-yellow{background:rgba(234,179,8,.15);color:#eab308}
+        .badge-red{background:rgba(239,68,68,.15);color:#ef4444}
+        .badge-blue{background:rgba(99,102,241,.15);color:#6366f1}
+        .section-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+        .btn-sm{padding:.4rem .9rem;font-size:.85rem;width:auto;border-radius:6px}
+        .img-preview{width:48px;height:48px;border-radius:6px;object-fit:cover;background:#1e293b;border:1px solid var(--border-color)}
+        .img-placeholder{width:48px;height:48px;border-radius:6px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;color:#6366f1;font-size:1.25rem;border:1px solid var(--border-color)}
+        .stat-number{font-size:2rem;font-weight:700;color:var(--text-primary)}
+        .empty-state{text-align:center;padding:3rem;color:var(--text-secondary)}
+        .empty-state i{font-size:3rem;opacity:.3;display:block;margin-bottom:1rem}
+        .logout-btn{background:none;border:1px solid var(--border-color);color:var(--text-secondary);padding:.4rem .75rem;border-radius:6px;cursor:pointer;font-size:.85rem;transition:all .2s;display:flex;align-items:center;gap:6px}
+        .logout-btn:hover{border-color:#ef4444;color:#ef4444}
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="ri-shopping-bag-3-line logo-icon"></i>
+            <h2>NexusCommerce<span>.</span></h2>
+        </div>
+        <nav class="nav-menu">
+            <button class="nav-link active" data-target="dashboard-section" onclick="showSection('dashboard-section')"><i class="ri-dashboard-line"></i> Overview</button>
+            <button class="nav-link" data-target="users-section" onclick="showSection('users-section')"><i class="ri-user-smile-line"></i> Customers</button>
+            <button class="nav-link" data-target="products-section" onclick="showSection('products-section')"><i class="ri-box-3-line"></i> Inventory</button>
+            <button class="nav-link" data-target="orders-section" onclick="showSection('orders-section')"><i class="ri-shopping-cart-2-line"></i> Orders</button>
+            <button class="nav-link" data-target="settings-section" onclick="showSection('settings-section')"><i class="ri-settings-3-line"></i> Settings</button>
+        </nav>
+        <div style="padding:1rem;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:.5rem">
+            <a href="store.html" style="text-decoration:none">
+                <button class="btn btn-secondary" style="width:100%;border-radius:8px"><i class="ri-store-2-line"></i> Storefront</button>
+            </a>
+            <button class="logout-btn" style="width:100%;justify-content:center" onclick="adminLogout()"><i class="ri-logout-box-line"></i> Logout</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-titles">
+                <h1 id="page-title">Store Overview</h1>
+                <p id="page-subtitle">Real-time management of your E-commerce platform.</p>
+            </div>
+            <div class="header-actions">
+                <div class="status-badge" id="gateway-status"><span class="pulse-dot"></span> Checking...</div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard-section" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon user-icon"><i class="ri-team-line"></i></div>
+                        <div class="stat-details">
+                            <p id="users-status" style="color:var(--text-secondary);font-size:.8rem;margin-bottom:.25rem">Checking...</p>
+                            <div class="stat-number" id="stat-users">—</div>
+                            <h3>Customers</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon product-icon"><i class="ri-box-3-line"></i></div>
+                        <div class="stat-details">
+                            <p id="products-status" style="color:var(--text-secondary);font-size:.8rem;margin-bottom:.25rem">Checking...</p>
+                            <div class="stat-number" id="stat-products">—</div>
+                            <h3>Products</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon order-icon"><i class="ri-exchange-dollar-line"></i></div>
+                        <div class="stat-details">
+                            <p id="orders-status" style="color:var(--text-secondary);font-size:.8rem;margin-bottom:.25rem">Checking...</p>
+                            <div class="stat-number" id="stat-orders">—</div>
+                            <h3>Orders</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="welcome-banner glass-card">
+                    <div class="banner-content">
+                        <h2>Welcome back, Admin</h2>
+                        <p>All customer orders, products and registrations are visible in the sidebar sections. Data updates live from your microservices.</p>
+                    </div>
+                    <div class="banner-graphic"><i class="ri-server-line"></i></div>
+                </div>
+            </section>
+
+            <!-- CUSTOMERS -->
+            <section id="users-section" class="section">
+                <div class="split-layout">
+                    <div class="form-container glass-card">
+                        <h3><i class="ri-user-add-line"></i> Register Customer</h3>
+                        <form onsubmit="createUser(event)">
+                            <div class="input-group"><label>Full Name</label><input type="text" id="userName" placeholder="Jane Doe" required></div>
+                            <div class="input-group"><label>Email</label><input type="email" id="userEmail" placeholder="jane@example.com" required></div>
+                            <button type="submit" class="btn btn-primary">Register <i class="ri-arrow-right-line"></i></button>
+                        </form>
+                    </div>
+                    <div class="form-container glass-card">
+                        <h3><i class="ri-search-eye-line"></i> Find Customer</h3>
+                        <form onsubmit="getUser(event)">
+                            <div class="input-group"><label>Customer ID</label><input type="number" id="searchUserId" placeholder="Enter ID" required></div>
+                            <button type="submit" class="btn btn-secondary">Search <i class="ri-search-line"></i></button>
+                        </form>
+                        <div id="userDetailsResult" class="result-box hidden"></div>
+                    </div>
+                </div>
+                <div class="glass-card" style="margin-top:2rem">
+                    <div class="section-actions">
+                        <h3 style="margin:0;border:none;padding:0"><i class="ri-group-line" style="color:var(--primary-color)"></i> All Customers</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="loadAllUsers()"><i class="ri-refresh-line"></i> Refresh</button>
+                    </div>
+                    <div class="table-wrap" id="usersTableWrap">
+                        <div class="empty-state"><i class="ri-group-line"></i>Loading...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUCTS -->
+            <section id="products-section" class="section">
+                <div class="form-container glass-card mx-auto" style="max-width:640px">
+                    <h3><i class="ri-add-box-line"></i> Add New Product</h3>
+                    <form onsubmit="createProduct(event)">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                            <div class="input-group"><label>Name</label><input type="text" id="productName" placeholder="Wireless Headphones" required></div>
+                            <div class="input-group"><label>Price (₹)</label><input type="number" id="productPrice" step="0.01" min="0" placeholder="999.99" required></div>
+                        </div>
+                        <div class="input-group"><label>Description</label><textarea id="productDesc" rows="2" placeholder="Short description..."></textarea></div>
+                        <div class="input-group">
+                            <label>Product Image URL <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
+                            <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
+                            <small class="helper-text">Paste any direct image link. Images are saved locally in your browser.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Product <i class="ri-box-3-line"></i></button>
+                    </form>
+                </div>
+                <div class="glass-card" style="margin-top:2rem">
+                    <div class="section-actions">
+                        <h3 style="margin:0;border:none;padding:0"><i class="ri-store-2-line" style="color:var(--primary-color)"></i> Product Catalog</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="loadAllProducts()"><i class="ri-refresh-line"></i> Refresh</button>
+                    </div>
+                    <div class="table-wrap" id="productsTableWrap">
+                        <div class="empty-state"><i class="ri-box-3-line"></i>Loading...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ORDERS -->
+            <section id="orders-section" class="section">
+                <div class="glass-card">
+                    <div class="section-actions">
+                        <h3 style="margin:0;border:none;padding:0"><i class="ri-shopping-cart-2-line" style="color:var(--primary-color)"></i> All Customer Orders</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="loadAllOrders()"><i class="ri-refresh-line"></i> Refresh</button>
+                    </div>
+                    <p style="color:var(--text-secondary);font-size:.9rem;margin-bottom:1.5rem">All orders placed by customers through the storefront, with customer and product details.</p>
+                    <div class="table-wrap" id="ordersTableWrap">
+                        <div class="empty-state"><i class="ri-shopping-cart-2-line"></i>Loading...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SETTINGS -->
+            <section id="settings-section" class="section">
+                <div class="form-container glass-card mx-auto" style="max-width:600px">
+                    <h3><i class="ri-settings-4-line"></i> Gateway Configuration</h3>
+                    <p class="form-instructions">Set the API Gateway base URL. Saved in your browser.</p>
+                    <form onsubmit="saveSettings(event)">
+                        <div class="input-group">
+                            <label>API Gateway Base URL</label>
+                            <input type="url" id="gatewayUrl" required>
+                            <small class="helper-text">No trailing slash — e.g. https://api-gateway-5ba1.onrender.com</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save <i class="ri-save-line"></i></button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div id="toast" class="toast hidden"><i id="toast-icon" class="ri-information-line"></i><span id="toast-message">Notification</span></div>
+
+<script>
+// Auth guard
+if (sessionStorage.getItem('adminAuth') !== 'true') window.location.href = 'admin-login.html';
+function adminLogout() { sessionStorage.removeItem('adminAuth'); window.location.href = 'admin-login.html'; }
+
+let gatewayUrl = localStorage.getItem('gatewayUrl') || 'https://api-gateway-5ba1.onrender.com';
+
+function getImageCache() { try { return JSON.parse(localStorage.getItem('productImages') || '{}'); } catch { return {}; } }
+function saveImageCache(c) { localStorage.setItem('productImages', JSON.stringify(c)); }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('gatewayUrl').value = gatewayUrl;
+    checkGatewayStatus();
+});
+
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelector(`[data-target="${id}"]`).classList.add('active');
+    const map = {
+        'dashboard-section':['Store Overview','Real-time management of your E-commerce platform.'],
+        'users-section':['Customer Management','Register and manage customer accounts.'],
+        'products-section':['Inventory Management','Manage the product catalog.'],
+        'orders-section':['Order Management','View all customer orders in real time.'],
+        'settings-section':['Gateway Configuration','Manage API connection settings.']
+    };
+    document.getElementById('page-title').innerText = map[id][0];
+    document.getElementById('page-subtitle').innerText = map[id][1];
+    if (id === 'dashboard-section') loadDashboardCounts();
+    if (id === 'users-section') loadAllUsers();
+    if (id === 'products-section') loadAllProducts();
+    if (id === 'orders-section') loadAllOrders();
+}
+
+async function loadDashboardCounts() {
+    const eps = [
+        {url:`${gatewayUrl}/users`,    stat:'stat-users',    status:'users-status'},
+        {url:`${gatewayUrl}/products`, stat:'stat-products', status:'products-status'},
+        {url:`${gatewayUrl}/orders`,   stat:'stat-orders',   status:'orders-status'},
+    ];
+    for (const ep of eps) {
+        try {
+            const r = await fetch(ep.url, {signal:AbortSignal.timeout(8000)});
+            const d = await r.json();
+            document.getElementById(ep.stat).textContent = Array.isArray(d) ? d.length : '?';
+            document.getElementById(ep.status).textContent = 'Operational';
+            document.getElementById(ep.status).style.color = '#10b981';
+        } catch {
+            document.getElementById(ep.stat).textContent = '—';
+            document.getElementById(ep.status).textContent = 'Unreachable';
+            document.getElementById(ep.status).style.color = '#ef4444';
+        }
+    }
+}
+
+async function createUser(event) {
+    event.preventDefault();
+    const btn = event.target.querySelector('button');
+    btn.textContent = 'Processing...'; btn.disabled = true;
+    try {
+        const r = await fetch(`${gatewayUrl}/users`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('userName').value,email:document.getElementById('userEmail').value}),signal:AbortSignal.timeout(10000)});
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error||'Failed');
+        showToast(`Customer registered! ID: ${d.userId||d.id}`,'success');
+        event.target.reset(); loadAllUsers();
+    } catch(e) { showToast(`Error: ${e.message}`,'error'); }
+    finally { btn.innerHTML = 'Register <i class="ri-arrow-right-line"></i>'; btn.disabled = false; }
+}
+
+async function getUser(event) {
+    event.preventDefault();
+    const uid = parseInt(document.getElementById('searchUserId').value);
+    const box = document.getElementById('userDetailsResult');
+    box.innerHTML = 'Searching...'; box.classList.remove('hidden');
+    try {
+        const r = await fetch(`${gatewayUrl}/users`,{signal:AbortSignal.timeout(10000)});
+        const users = await r.json();
+        const u = users.find(u=>u.id===uid);
+        if (!u) { box.innerHTML=`<p style="color:#ef4444">No customer with ID ${uid}</p>`; return; }
+        box.innerHTML=`<div class="data-row"><span class="data-label">ID</span><span class="data-value">${u.id}</span></div><div class="data-row"><span class="data-label">Name</span><span class="data-value">${u.name}</span></div><div class="data-row"><span class="data-label">Email</span><span class="data-value">${u.email}</span></div>`;
+    } catch(e) { box.innerHTML=`<p style="color:#ef4444">${e.message}</p>`; }
+}
+
+async function loadAllUsers() {
+    const wrap = document.getElementById('usersTableWrap');
+    wrap.innerHTML = '<div class="empty-state"><i class="ri-loader-4-line"></i>Loading...</div>';
+    try {
+        const r = await fetch(`${gatewayUrl}/users`,{signal:AbortSignal.timeout(10000)});
+        const users = await r.json();
+        if (!users.length) { wrap.innerHTML='<div class="empty-state"><i class="ri-group-line"></i>No customers yet</div>'; return; }
+        wrap.innerHTML=`<table><thead><tr><th>ID</th><th>Name</th><th>Email</th></tr></thead><tbody>${users.map(u=>`<tr><td><span class="badge badge-blue">#${u.id}</span></td><td>${u.name}</td><td style="color:var(--text-secondary)">${u.email}</td></tr>`).join('')}</tbody></table>`;
+    } catch(e) { wrap.innerHTML=`<div class="empty-state"><i class="ri-error-warning-line"></i>${e.message}</div>`; }
+}
+
+async function createProduct(event) {
+    event.preventDefault();
+    const btn = event.target.querySelector('button');
+    btn.textContent = 'Adding...'; btn.disabled = true;
+    const imageUrl = document.getElementById('productImage').value.trim();
+    try {
+        const r = await fetch(`${gatewayUrl}/products`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('productName').value,price:parseFloat(document.getElementById('productPrice').value),description:document.getElementById('productDesc').value}),signal:AbortSignal.timeout(10000)});
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error||'Failed');
+        if (imageUrl && d.productId) { const c=getImageCache(); c[d.productId]=imageUrl; saveImageCache(c); }
+        showToast(`Product added! ID: ${d.productId}`,'success');
+        event.target.reset(); loadAllProducts();
+    } catch(e) { showToast(`Error: ${e.message}`,'error'); }
+    finally { btn.innerHTML='Add Product <i class="ri-box-3-line"></i>'; btn.disabled=false; }
+}
+
+async function loadAllProducts() {
+    const wrap = document.getElementById('productsTableWrap');
+    wrap.innerHTML = '<div class="empty-state"><i class="ri-loader-4-line"></i>Loading...</div>';
+    try {
+        const r = await fetch(`${gatewayUrl}/products`,{signal:AbortSignal.timeout(10000)});
+        const products = await r.json();
+        const images = getImageCache();
+        if (!products.length) { wrap.innerHTML='<div class="empty-state"><i class="ri-box-3-line"></i>No products yet</div>'; return; }
+        wrap.innerHTML=`<table><thead><tr><th>ID</th><th>Image</th><th>Name</th><th>Price</th><th>Description</th></tr></thead><tbody>${products.map(p=>{
+            const img=images[p.id];
+            const imgHtml=img?`<img src="${img}" class="img-preview" onerror="this.style.display='none'">`:`<div class="img-placeholder"><i class="ri-box-3-line"></i></div>`;
+            return `<tr><td><span class="badge badge-blue">#${p.id}</span></td><td>${imgHtml}</td><td><strong>${p.name}</strong></td><td style="color:#10b981;font-weight:600">₹${Number(p.price).toFixed(2)}</td><td style="color:var(--text-secondary)">${p.description||'—'}</td></tr>`;
+        }).join('')}</tbody></table>`;
+    } catch(e) { wrap.innerHTML=`<div class="empty-state"><i class="ri-error-warning-line"></i>${e.message}</div>`; }
+}
+
+async function loadAllOrders() {
+    const wrap = document.getElementById('ordersTableWrap');
+    wrap.innerHTML = '<div class="empty-state"><i class="ri-loader-4-line"></i>Loading orders...</div>';
+    try {
+        const [oRes,uRes,pRes] = await Promise.all([
+            fetch(`${gatewayUrl}/orders`,{signal:AbortSignal.timeout(10000)}),
+            fetch(`${gatewayUrl}/users`,{signal:AbortSignal.timeout(10000)}),
+            fetch(`${gatewayUrl}/products`,{signal:AbortSignal.timeout(10000)}),
+        ]);
+        const orders=await oRes.json(), users=await uRes.json(), products=await pRes.json();
+        if (!orders.length) { wrap.innerHTML='<div class="empty-state"><i class="ri-shopping-cart-2-line"></i>No orders yet</div>'; return; }
+        const uMap=Object.fromEntries(users.map(u=>[u.id,u]));
+        const pMap=Object.fromEntries(products.map(p=>[p.id,p]));
+        wrap.innerHTML=`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>${orders.map(o=>{
+            const u=uMap[o.user_id], p=pMap[o.product_id];
+            const total=p?(Number(p.price)*Number(o.quantity)).toFixed(2):'—';
+            const sc=o.status==='pending'?'badge-yellow':o.status==='completed'?'badge-green':'badge-blue';
+            const date=o.created_at?new Date(o.created_at).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+            return `<tr>
+                <td><span class="badge badge-blue">#${o.id}</span></td>
+                <td><strong>${u?u.name:`User #${o.user_id}`}</strong><br><span style="color:var(--text-secondary);font-size:.8rem">${u?u.email:''}</span></td>
+                <td><strong>${p?p.name:`Product #${o.product_id}`}</strong></td>
+                <td style="text-align:center">${o.quantity}</td>
+                <td style="color:#10b981;font-weight:600">₹${total}</td>
+                <td><span class="badge ${sc}">${o.status||'pending'}</span></td>
+                <td style="color:var(--text-secondary);font-size:.85rem">${date}</td>
+            </tr>`;
+        }).join('')}</tbody></table>`;
+    } catch(e) { wrap.innerHTML=`<div class="empty-state"><i class="ri-error-warning-line"></i>${e.message}</div>`; }
+}
+
+function saveSettings(event) {
+    event.preventDefault();
+    const v=document.getElementById('gatewayUrl').value.trim().replace(/\/$/,'');
+    if (!v) { showToast('Enter a valid URL','error'); return; }
+    gatewayUrl=v; localStorage.setItem('gatewayUrl',gatewayUrl);
+    showToast('Gateway URL saved!','success'); checkGatewayStatus();
+}
+
+async function checkGatewayStatus() {
+    const badge=document.getElementById('gateway-status');
+    badge.innerHTML='<span class="pulse-dot"></span> Checking...';
+    try {
+        const r=await fetch(`${gatewayUrl}/`,{signal:AbortSignal.timeout(8000)});
+        badge.innerHTML=(r.ok||r.status<500)?'<span class="pulse-dot"></span> Gateway Online':'<span class="pulse-dot" style="background:#ef4444"></span> Gateway Error';
+    } catch { badge.innerHTML='<span class="pulse-dot" style="background:#ef4444"></span> Gateway Offline'; }
+    loadDashboardCounts();
+}
+
+function showToast(msg,type) {
+    const t=document.getElementById('toast'),m=document.getElementById('toast-message'),i=document.getElementById('toast-icon');
+    m.textContent=msg;
+    i.className=type==='error'?'ri-error-warning-line':'ri-checkbox-circle-line';
+    t.className=`toast show ${type==='error'?'error':'success'}`;
+    clearTimeout(t._t); t._t=setTimeout(()=>{t.className='toast hidden';},4000);
+}
+</script>
+</body>
+</html>
